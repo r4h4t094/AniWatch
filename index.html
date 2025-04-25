@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AniWatch - Stream Anime for Free</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff5e57;
+            --secondary-color: #3d3d3d;
+            --dark-color: #1a1a1a;
+            --light-color: #f8f9fa;
+            --text-color: #e0e0e0;
+            --text-secondary: #b0b0b0;
+        }
+        
+        body {
+            background-color: var(--dark-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+        
+        .nav-link {
+            color: var(--text-color) !important;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+        
+        .search-box {
+            background-color: var(--secondary-color);
+            border: none;
+            color: var(--text-color);
+        }
+        
+        .search-box:focus {
+            box-shadow: 0 0 0 0.25rem rgba(255, 94, 87, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #ff3d36;
+        }
+        
+        .card {
+            background-color: var(--secondary-color);
+            border: none;
+            transition: transform 0.3s;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-img-top {
+            height: 300px;
+            object-fit: cover;
+        }
+        
+        .card-title {
+            color: var(--text-color);
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .card-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+            margin: 20px 0;
+        }
+        
+        .episode-btn {
+            background-color: var(--dark-color);
+            color: var(--text-color);
+            border: none;
+            margin: 5px;
+            width: 60px;
+        }
+        
+        .episode-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .active-episode {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .anime-detail-poster {
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .anime-info-label {
+            color: var(--text-secondary);
+            font-weight: bold;
+        }
+        
+        .anime-info-value {
+            color: var(--text-color);
+        }
+        
+        .genre-badge {
+            background-color: var(--dark-color);
+            color: var(--text-color);
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .spinner-border {
+            color: var(--primary-color);
+        }
+        
+        .server-btn {
+            background-color: var(--dark-color);
+            color: var(--text-color);
+            border: none;
+            margin: 5px;
+        }
+        
+        .server-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .active-server {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .back-btn {
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+        
+        .back-btn:hover {
+            text-decoration: underline;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .card-img-top {
+                height: 200px;
+            }
+            
+            .search-box {
+                width: 100% !important;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#" onclick="showHomePage()">AniWatch</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showHomePage()">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showAZListPage('all')">A-Z List</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showCategoryPage('most-popular')">Popular</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showCategoryPage('top-airing')">Airing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showCategoryPage('recently-added')">New Releases</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <input class="form-control me-2 search-box" type="search" placeholder="Search anime..." id="searchInput">
+                    <button class="btn btn-primary" onclick="searchAnime()"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="container mt-4" id="mainContent">
+        <!-- Home Page Content will be loaded here dynamically -->
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading...</p>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="videoModalTitle">Episode Title</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="video-container" id="videoPlayer">
+                        <!-- Video player will be loaded here -->
+                    </div>
+                    <div class="p-3">
+                        <div class="d-flex flex-wrap mb-3" id="episodeButtons">
+                            <!-- Episode buttons will be loaded here -->
+                        </div>
+                        <div class="d-flex flex-wrap" id="serverButtons">
+                            <!-- Server buttons will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        // API configuration
+        const API_BASE_URL = "https://aniwatch-api-net.vercel.app";
+        
+        // Global variables
+        let currentAnimeId = null;
+        let currentEpisodeId = null;
+        let currentCategory = null;
+        let currentSortOption = null;
+        let currentPage = 1;
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            showHomePage();
+            
+            // Add event listener for Enter key in search
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchAnime();
+                }
+            });
+        });
+        
+        // Show loading spinner
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'none';
+        }
+        
+        // Hide loading spinner
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+        
+        // Fetch data with CORS bypass
+        async function fetchData(url) {
+            showLoading();
+            try {
+                // Using a CORS proxy
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                
+                if (data.contents) {
+                    return JSON.parse(data.contents);
+                } else {
+                    throw new Error('Failed to fetch data');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                hideLoading();
+                return { success: false, error: error.message };
+            }
+        }
+        
+        // Show home page
+        async function showHomePage() {
+            const url = `${API_BASE_URL}/api/v2/hianime/home`;
+            const data = await fetchData(url);
+            
+            if (data.success) {
+                let html = `
+                    <h3 class="section-title">Spotlight</h3>
+                    <div class="row mb-4">
+                        ${data.data.spotlightAnimes.map(anime => `
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card" onclick="showAnimeDetails('${anime.id}')">
+                                    <img src="${anime.poster}" class="card-img-top" alt="${anime.name}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${anime.name}</h5>
+                                        <p class="card-text">${anime.description.substring(0, 100)}...</p>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge bg-primary">${anime.type}</span>
+                                            <span class="text-white">Episodes: ${anime.episodes.sub} (Sub)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <h3 class="section-title">Latest Episodes</h3>
+                    <div class="row mb-4">
+                        ${data.data.latestEpisodeAnimes.map(anime => `
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                                <div class="card" onclick="showAnimeDetails('${anime.id}')">
+                                    <img src="${anime.poster}" class="card-img-top" alt="${anime.name}">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title">${anime.name}</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge bg-primary">${anime.type}</span>
+                                            <span class="text-white small">${anime.episodes.sub}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <h3 class="section-title">Top Airing</h3>
+                    <div class="row mb-4">
+                        ${data.data.topAiringAnimes.map(anime => `
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                                <div class="card" onclick="showAnimeDetails('${anime.id}')">
+                                    <img src="${anime.poster}" class="card-img-top" alt="${anime.name}">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title">${anime.name}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <h3 class="section-title">Popular</h3>
+                    <div class="row mb-4">
+                        ${data.data.mostPopularAnimes.map(anime => `
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                                <div class="card" onclick="showAnimeDetails('${anime.id}')">
+                                    <img src="${anime.poster}" class="card-img-top" alt="${anime.name}">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title">${anime.name}</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge bg-primary">${anime.type}</span>
+                                            <span class="text-white small">${anime.episodes.sub}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                document.getElementById('mainContent').innerHTML = html;
+                hideLoading();
+            } else {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="alert alert-danger">Failed to load data. Please try again later.</div>
+                `;
+                hideLoading();
+            }
+        }
+        
+        // Show A-Z List page
+        async function showAZListPage(sortOption, page = 1) {
+            currentSortOption = sortOption;
+            currentPage = page;
+            
+            const url = `${API_BASE_URL}/api/v2/hianime/azlist/${sortOption}?page=${page}`;
+            const data = await fetchData(url);
+            
+            if (data.success) {
+                let html = `
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="section-title m-0">${sortOption === 'all' ? 'All Anime' : sortOption === 'other' ? 'Other' : sortOption.toUpperCase()} Anime</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Sort By: ${sortOption === 'all' ? 'All' : sortOption === 'other' ? 'Other' : sortOption.toUpperCase()}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="#" onclick="showAZListPage('all', 1)">All</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showAZListPage('other', 1)">Other</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showAZListPage('0-9', 1)">0-9</a></li>
+                                ${'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(letter => `
+                                    <li><a class="dropdown-item" href="#" onclick="showAZListPage('${letter.toLowerCase()}', 1)">${letter}</a></li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        ${data.data.animes.map(anime => `
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                                <div class="card" onclick="showAnimeDetails('${anime.id}')">
+                                    <img src="${anime.poster}" class="card-img-top" alt="${anime.name}">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title">${anime.name}</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge bg-primary">${anime.type}</span>
+                                            <span class="text-white small">${anime.episodes.sub}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                                <a class="page-link bg-secondary text-white" href="#" onclick="showAZListPage('${sortOption}', ${currentPage - 1})">Previous</a>
+                            </li>
+                            ${Array.from({length: Math.min(5, data.data.totalPages)}, (_, i) => {
+                                const pageNum = i + 1;
+                                return `
+                                    <li class="page-item ${pageNum === currentPage ? 'active' : ''}">
+                                        <a class="page-link ${pageNum === currentPage ? 'bg-primary' : 'bg-secondary text-white'}" href="#" onclick="showAZListPage('${sortOption}', ${pageNum})">${pageNum}</a>
+                                    </li>
+                                `;
+                            }).join('')}
+                            ${data.data.totalPages > 5 ? `
+                                <li class="page-item disabled">
+                                    <span class="page-link bg-secondary">...</span>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link bg-secondary text-white" href="#" onclick="showAZListPage('${sortOption}', ${data.data.totalPages})">${data.data.totalPages}</a>
+                                </li>
+                            ` : ''}
+                            <li class="page-item ${currentPage === data.data.totalPages ? 'disabled' : ''}">
+                                <a class="page-link bg-secondary text-white" href="#" onclick="showAZListPage('${sortOption}', ${currentPage + 1})">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                `;
+                
+                document.getElementById('mainContent').innerHTML = html;
+                hideLoading();
+            } else {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="alert alert-danger">Failed to load data. Please try again later.</div>
+                `;
+                hideLoading();
+            }
+        }
+        
+        // Show category page
+        async function showCategoryPage(category, page = 1) {
+            currentCategory = category;
+            currentPage = page;
+            
+            const url = `${API_BASE_URL}/api/v2/hianime/category/${category}?page=${page}`;
+            const data = await fetchData(url);
+            
+            if (data.success) {
+                let categoryName = category.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                if (category === 'subbed-anime') categoryName = 'Subbed Anime';
+                if (category === 'dubbed-anime') categoryName = 'Dubbed Anime';
+                if (category === 'recently-updated') categoryName = 'Recently Updated';
+                if (category === 'recently-added') categoryName = 'Recently Added';
+                if (category === 'top-upcoming') categoryName = 'Top Upcoming';
+                if (category === 'top-airing') categoryName = 'Top Airing';
+                
+                let html = `
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="section-title m-0">${categoryName}</h3>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Categories
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark">
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('most-popular', 1)">Most Popular</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('most-favorite', 1)">Most Favorite</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('subbed-anime', 1)">Subbed Anime</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('dubbed-anime', 1)">Dubbed Anime</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('recently-updated', 1)">Recently Updated</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('recently-added', 1)">Recently Added</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('top-upcoming', 1)">Top Upcoming</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('top-airing', 1)">Top Airing</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('movie', 1)">Movies</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('tv', 1)">TV Series</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="showCategoryPage('completed', 1)">Completed</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        ${data.data.animes.map(anime => `
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                                <div class="card" onclick="showAnimeDetails('${anime.id}')">
+                                    <img src="${anime.poster}" class="card-img-top" alt="${anime.name}">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title">${anime.name}</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge bg-primary">${anime.type}</span>
+                                            <span class="text-white small">${anime.episodes.sub}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                                <a class="page-link bg-secondary text-white" href="#" onclick="showCategoryPage('${category}', ${currentPage - 1})">Previous</a>
+                            </li>
+                            ${Array.from({length: Math.min(5, data.data.totalPages)}, (_, i) => {
+                                const pageNum = i + 1;
+                                return `
+                                    <li class="page-item ${pageNum === currentPage ? 'active' : ''}">
+                                        <a class="page-link ${pageNum === currentPage ? 'bg-primary' : 'bg-secondary text-white'}" href="#" onclick="showCategoryPage('${category}', ${pageNum})">${pageNum}</a>
+                                    </li>
+                                `;
+                            }).join('')}
+                            ${data.data.totalPages > 5 ? `
+                                <li class="page-item disabled">
+                                    <span class="page-link bg-secondary">...</span>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link bg-secondary text-white" href="#" onclick="showCategoryPage('${category}', ${data.data.totalPages})">${data.data.totalPages}</a>
+                                </li>
+                            ` : ''}
+                            <li class="page-item ${currentPage === data.data.totalPages ? 'disabled' : ''}">
+                                <a class="page-link bg-secondary text-white" href="#" onclick="showCategoryPage('${category}', ${currentPage + 1})">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                `;
+                
+                document.getElementById('mainContent').innerHTML = html;
+                hideLoading();
+            } else {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="alert alert-danger">Failed to load data. Please try again later.</div>
+                `;
+                hideLoading();
+            }
+        }
+        
+        // Show genre page
+        async function showGenrePage(genre, page = 1) {
+            currentPage = page;
+            
+            const url = `${API_BASE_URL}/api/v2/hianime/genre/${genre}?page=${page}`;
+            const data = await fetchData(url);
+            
+            if (data.success) {
+                let genreName = genre.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                
+                let html = `
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="section-title m-0">${genreName} Anime</h3>
+                        <div>
+                            <span class="badge bg-primary me-2">Page ${page}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="mb-2">Other Genres:</h5>
+                        <div class="d-flex flex-wrap">
+                            ${data.data.genres.map(g => `
+                                <a href="#" class="genre-badge badge" onclick="showGenrePage('${g.toLowerCase()}')">${g}</a>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        ${data.data.animes.map(anime => `
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                                <div class="card" onclick="showAnimeDetails('${anime.id}')">
+                                    <img src="${anime.poster}" class="card-img-top" alt="${anime.name}">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title">${anime.name}</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge bg-primary">${anime.type}</span>
+                                            <span class="text-white small">${anime.episodes.sub}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                                <a class="page-link bg-secondary text-white" href="#" onclick="showGenrePage('${genre}', ${currentPage - 1})">Previous</a>
+                            </li>
+                            ${Array.from({length: Math.min(5, data.data.totalPages)}, (_, i) => {
+                                const pageNum = i + 1;
+                                return `
+                                    <li class="page-item ${pageNum === currentPage ? 'active' : ''}">
+                                        <a class="page-link ${pageNum === currentPage ? 'bg-primary' : 'bg-secondary text-white'}" href="#" onclick="showGenrePage('${genre}', ${pageNum})">${pageNum}</a>
+                                    </li>
+                                `;
+                            }).join('')}
+                            ${data.data.totalPages > 5 ? `
+                                <li class="page-item disabled">
+                                    <span class="page-link bg-secondary">...</span>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link bg-secondary text-white" href="#" onclick="showGenrePage('${genre}', ${data.data.totalPages})">${data.data.totalPages}</a>
+                                </li>
+                            ` : ''}
+                            <li class="page-item ${currentPage === data.data.totalPages ? 'disabled' : ''}">
+                                <a class="page-link bg-secondary text-white" href="#" onclick="showGenrePage('${genre}', ${currentPage + 1})">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                `;
+                
+                document.getElementById('mainContent').innerHTML = html;
+                hideLoading();
+            } else {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="alert alert-danger">Failed to load data. Please try again later.</div>
+                `;
+                hideLoading();
+            }
+        }
+        
+        // Show anime details
+        async function showAnimeDetails(animeId) {
+            currentAnimeId = animeId;
+            
+            const url = `${API_BASE_URL}/api/v2/hianime/anime/${animeId}`;
+            const data = await fetchData(url);
+            
+            if (data.success) {
+                const anime = data.data.anime;
+                
+                let html = `
+                    <div class="mb-3">
+                        <a href="#" class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left me-2"></i>Back</a>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 col-lg-3 mb-4">
+                            <img src="${anime.info.poster}" class="img-fluid rounded anime-detail-poster" alt="${anime.info.name}">
+                            <div class="mt-3">
+                                <button class="btn btn-primary w-100" onclick="showEpisodes('${animeId}')">
+                                    <i class="fas fa-play me-2"></i>Watch Now
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-8 col-lg-9">
+                            <h2>${anime.info.name}</h2>
+                            <p class="text-muted">${anime.moreInfo.jname || ''}</p>
+                            
+                            <div class="mb-4">
+                                <p>${anime.info.description}</p>
+                            </div>
+                            
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="d-flex mb-2">
+                                        <span class="anime-info-label me-2">Rating:</span>
+                                        <span class="anime-info-value">${anime.info.stats.rating}</span>
+                                    </div>
+                                    <div class="d-flex mb-2">
+                                        <span class="anime-info-label me-2">Quality:</span>
+                                        <span class="anime-info-value">${anime.info.stats.quality}</span>
+                                    </div>
+                                    <div class="d-flex mb-2">
+                                        <span class="anime-info-label me-2">Episodes:</span>
+                                        <span class="anime-info-value">${anime.info.stats.episodes.sub} (Sub) / ${anime.info.stats.episodes.dub} (Dub)</span>
+                                    </div>
+                                    <div class="d-flex mb-2">
+                                        <span class="anime-info-label me-2">Type:</span>
+                                        <span class="anime-info-value">${anime.info.stats.type}</span>
+                                    </div>
+                                    <div class="d-flex mb-2">
+                                        <span class="anime-info-label me-2">Duration:</span>
+                                        <span class="anime-info-value">${anime.info.stats.duration}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="d-flex mb-2">
+                                        <span class="anime-info-label me-2">Aired:</span>
+                                        <span class="anime-info-value">${anime.moreInfo.aired}</span>
+                                    </div>
+                                    <div class="d-flex mb-2">
+                                        <span class="anime-info-label me-2">Status:</span>
+                                        <span class="anime-info-value">${anime.moreInfo.status}</span>
+                                    </div>
+                                    <div class="d-flex mb-2">
+                                        <span class="anime-info-label me-2">Studios:</span>
+                                        <span class="anime-info-value">${anime.moreInfo.studios}</span>
+                                    </div>
+                                    <div class="d-flex mb-2">
+                                        <span class="anime-info-label me-2">Genres:</span>
+                                        <div class="d-flex flex-wrap">
+                                            ${anime.moreInfo.genres.map(genre => `
+                                                <a href="#" class="genre-badge badge" onclick="showGenrePage('${genre.toLowerCase()}')">${genre}</a>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            ${anime.info.promotionalVideos && anime.info.promotionalVideos.length > 0 ? `
+                                <div class="mb-4">
+                                    <h5 class="section-title">Promotional Videos</h5>
+                                    <div class="row">
+                                        ${anime.info.promotionalVideos.map((video, index) => `
+                                            <div class="col-md-6 mb-3">
+                                                <div class="ratio ratio-16x9">
+                                                    <iframe src="${video.source}" title="${video.title || 'Promotional Video ' + (index + 1)}" allowfullscreen></iframe>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            
+                            ${anime.info.characterVoiceActor && anime.info.characterVoiceActor.length > 0 ? `
+                                <div class="mb-4">
+                                    <h5 class="section-title">Characters & Voice Actors</h5>
+                                    <div class="row">
+                                        ${anime.info.characterVoiceActor.slice(0, 6).map(cast => `
+                                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
+                                                <div class="card h-100">
+                                                    <img src="${cast.character.poster}" class="card-img-top" alt="${cast.character.name}">
+                                                    <div class="card-body p-2">
+                                                        <h6 class="card-title">${cast.character.name}</h6>
+                                                        <p class="card-text small">${cast.character.cast}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
+                                                <div class="card h-100">
+                                                    <img src="${cast.voiceActor.poster}" class="card-img-top" alt="${cast.voiceActor.name}">
+                                                    <div class="card-body p-2">
+                                                        <h6 class="card-title">${cast.voiceActor.name}</h6>
+                                                        <p class="card-text small">${cast.voiceActor.cast}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="section-title">Recommended</h5>
+                        <div class="row">
+                            ${data.data.recommendedAnimes.slice(0, 12).map(anime => `
+                                <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                                    <div class="card" onclick="showAnimeDetails('${anime.id}')">
+                                        <img src="${anime.poster}" class="card-img-top" alt="${anime.name}">
+                                        <div class="card-body p-2">
+                                            <h6 class="card-title">${anime.name}</h6>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="badge bg-primary">${anime.type}</span>
+                                                <span class="text-white small">${anime.episodes.sub}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    ${data.data.seasons && data.data.seasons.length > 0 ? `
+                        <div class="mb-4">
+                            <h5 class="section-title">Seasons</h5>
+                            <div class="row">
+                                ${data.data.seasons.map(season => `
+                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                                        <div class="card ${season.isCurrent ? 'border-primary' : ''}" onclick="showAnimeDetails('${season.id}')">
+                                            <img src="${season.poster}" class="card-img-top" alt="${season.name}">
+                                            <div class="card-body p-2">
+                                                <h6 class="card-title">${season.title}</h6>
+                                                ${season.isCurrent ? '<span class="badge bg-primary">Current</span>' : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                `;
+                
+                document.getElementById('mainContent').innerHTML = html;
+                hideLoading();
+            } else {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="alert alert-danger">Failed to load anime details. Please try again later.</div>
+                `;
+                hideLoading();
+            }
+        }
+        
+        // Show episodes list
+        async function showEpisodes(animeId) {
+            const url = `${API_BASE_URL}/api/v2/hianime/anime/${animeId}/episodes`;
+            const data = await fetchData(url);
+            
+            if (data.success) {
+                let html = `
+                    <div class="mb-3">
+                        <a href="#" class="back-btn" onclick="showAnimeDetails('${animeId}')"><i class="fas fa-arrow-left me-2"></i>Back to Anime</a>
+                    </div>
+                    
+                    <h3 class="section-title">Episodes (${data.data.totalEpisodes})</h3>
+                    
+                    <div class="d-flex flex-wrap mb-4">
+                        ${data.data.episodes.map(episode => `
+                            <button class="btn episode-btn ${episode.isFiller ? 'btn-secondary' : 'btn-dark'}" 
+                                    onclick="playEpisode('${animeId}', '${episode.episodeId}', ${episode.number}, '${episode.title}')">
+                                ${episode.number}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+                
+                document.getElementById('mainContent').innerHTML = html;
+                hideLoading();
+                
+                // Play the first episode by default
+                if (data.data.episodes.length > 0) {
+                    const firstEpisode = data.data.episodes[0];
+                    playEpisode(animeId, firstEpisode.episodeId, firstEpisode.number, firstEpisode.title);
+                }
+            } else {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="alert alert-danger">Failed to load episodes. Please try again later.</div>
+                `;
+                hideLoading();
+            }
+        }
+        
+        // Play episode
+        async function playEpisode(animeId, episodeId, episodeNumber, episodeTitle) {
+            currentEpisodeId = episodeId;
+            
+            // Get episode servers
+            const serversUrl = `${API_BASE_URL}/api/v2/hianime/episode/servers?animeEpisodeId=${episodeId}`;
+            const serversData = await fetchData(serversUrl);
+            
+            if (serversData.success) {
+                // Create episode buttons
+                let episodeButtons = '';
+                for (let i = Math.max(1, episodeNumber - 5); i <= Math.min(episodeNumber + 5, serversData.data.totalEpisodes || 100); i++) {
+                    episodeButtons += `
+                        <button class="btn episode-btn ${i === episodeNumber ? 'active-episode' : 'btn-dark'}" 
+                                onclick="playEpisode('${animeId}', '${animeId}?ep=${i}', ${i}, 'Episode ${i}')">
+                            ${i}
+                        </button>
+                    `;
+                }
+                
+                // Create server buttons (prioritize sub)
+                let serverButtons = '';
+                if (serversData.data.sub && serversData.data.sub.length > 0) {
+                    serversData.data.sub.forEach(server => {
+                        serverButtons += `
+                            <button class="btn server-btn ${server.serverName === 'vidstreaming' ? 'active-server' : ''}" 
+                                    onclick="loadVideoSource('${animeId}', '${episodeId}', ${episodeNumber}, '${server.serverName}', 'sub')">
+                                ${server.serverName} (Sub)
+                            </button>
+                        `;
+                    });
+                }
+                
+                if (serversData.data.dub && serversData.data.dub.length > 0) {
+                    serversData.data.dub.forEach(server => {
+                        serverButtons += `
+                            <button class="btn server-btn" 
+                                    onclick="loadVideoSource('${animeId}', '${episodeId}', ${episodeNumber}, '${server.serverName}', 'dub')">
+                                ${server.serverName} (Dub)
+                            </button>
+                        `;
+                    });
+                }
+                
+                if (serversData.data.raw && serversData.data.raw.length > 0) {
+                    serversData.data.raw.forEach(server => {
+                        serverButtons += `
+                            <button class="btn server-btn" 
+                                    onclick="loadVideoSource('${animeId}', '${episodeId}', ${episodeNumber}, '${server.serverName}', 'raw')">
+                                ${server.serverName} (Raw)
+                            </button>
+                        `;
+                    });
+                }
+                
+                // Update modal content
+                document.getElementById('videoModalTitle').textContent = `Episode ${episodeNumber}: ${episodeTitle}`;
+                document.getElementById('episodeButtons').innerHTML = episodeButtons;
+                document.getElementById('serverButtons').innerHTML = serverButtons;
+                
+                // Show modal
+                const videoModal = new bootstrap.Modal(document.getElementById('videoModal'));
+                videoModal.show();
+                
+                // Load default server (first sub server)
+                if (serversData.data.sub && serversData.data.sub.length > 0) {
+                    loadVideoSource(animeId, episodeId, episodeNumber, serversData.data.sub[0].serverName, 'sub');
+                } else if (serversData.data.dub && serversData.data.dub.length > 0) {
+                    loadVideoSource(animeId, episodeId, episodeNumber, serversData.data.dub[0].serverName, 'dub');
+                } else if (serversData.data.raw && serversData.data.raw.length > 0) {
+                    loadVideoSource(animeId, episodeId, episodeNumber, serversData.data.raw[0].serverName, 'raw');
+                }
+            } else {
+                alert('Failed to load episode servers. Please try again later.');
+            }
+        }
+        
+        // Load video source
+        async function loadVideoSource(animeId, episodeId, episodeNumber, serverName, category) {
+            const sourcesUrl = `${API_BASE_URL}/api/v2/hianime/episode/sources?animeEpisodeId=${episodeId}&server=${serverName}&category=${category}`;
+            const sourcesData = await fetchData(sourcesUrl);
+            
+            if (sourcesData.success) {
+                const videoPlayer = document.getElementById('videoPlayer');
+                videoPlayer.innerHTML = '';
+                
+                // Check if HLS is supported
+                if (Hls.isSupported()) {
+                    const hls = new Hls();
+                    const hlsUrl = sourcesData.data.sources.find(source => source.isM3U8)?.url;
+                    
+                    if (hlsUrl) {
+                        hls.loadSource(hlsUrl);
+                        hls.attachMedia(document.createElement('video'));
+                        videoPlayer.appendChild(hls.media);
+                        hls.media.controls = true;
+                        hls.media.style.width = '100%';
+                        hls.media.style.height = '100%';
+                        hls.media.play();
+                    } else {
+                        videoPlayer.innerHTML = '<p class="text-white p-3">No playable source found for this server.</p>';
+                    }
+                } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                    // For Safari
+                    const hlsUrl = sourcesData.data.sources.find(source => source.isM3U8)?.url;
+                    if (hlsUrl) {
+                        const video = document.createElement('video');
+                        video.controls = true;
+                        video.style.width = '100%';
+                        video.style.height = '100%';
+                        video.src = hlsUrl;
+                        videoPlayer.appendChild(video);
+                        video.play();
+                    } else {
+                        videoPlayer.innerHTML = '<p class="text-white p-3">No playable source found for this server.</p>';
+                    }
+                } else {
+                    // Fallback to MP4 if available
+                    const mp4Source = sourcesData.data.sources.find(source => !source.isM3U8);
+                    if (mp4Source) {
+                        const video = document.createElement('video');
+                        video.controls = true;
+                        video.style.width = '100%';
+                        video.style.height = '100%';
+                        video.innerHTML = `<source src="${mp4Source.url}" type="video/mp4">`;
+                        videoPlayer.appendChild(video);
+                        video.play();
+                    } else {
+                        videoPlayer.innerHTML = '<p class="text-white p-3">No playable source found for this server.</p>';
+                    }
+                }
+                
+                // Update active server button
+                document.querySelectorAll('.server-btn').forEach(btn => {
+                    btn.classList.remove('active-server');
+                });
+                
+                const activeServerBtn = Array.from(document.querySelectorAll('.server-btn')).find(btn => 
+                    btn.textContent.includes(serverName) && btn.textContent.includes(category)
+                );
+                
+                if (activeServerBtn) {
+                    activeServerBtn.classList.add('active-server');
+                }
+            } else {
+                document.getElementById('videoPlayer').innerHTML = '<p class="text-white p-3">Failed to load video source. Please try another server.</p>';
+            }
+        }
+        
+        // Search anime
+        async function searchAnime() {
+            const query = document.getElementById('searchInput').value.trim();
+            
+            if (query === '') {
+                alert('Please enter a search term');
+                return;
+            }
+            
+            const url = `${API_BASE_URL}/api/v2/hianime/search?q=${encodeURIComponent(query)}`;
+            const data = await fetchData(url);
+            
+            if (data.success) {
+                let html = `
+                    <div class="mb-3">
+                        <a href="#" class="back-btn" onclick="showHomePage()"><i class="fas fa-arrow-left me-2"></i>Back to Home</a>
+                    </div>
+                    
+                    <h3 class="section-title">Search Results for "${query}"</h3>
+                    
+                    <div class="row">
+                        ${data.data.animes.map(anime => `
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-4">
+                                <div class="card" onclick="showAnimeDetails('${anime.id}')">
+                                    <img src="${anime.poster}" class="card-img-top" alt="${anime.name}">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title">${anime.name}</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span class="badge bg-primary">${anime.type}</span>
+                                            <span class="text-white small">${anime.episodes.sub}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${data.data.animes.length === 0 ? `
+                        <div class="alert alert-info">No results found for "${query}"</div>
+                    ` : ''}
+                `;
+                
+                document.getElementById('mainContent').innerHTML = html;
+                hideLoading();
+            } else {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="alert alert-danger">Failed to search. Please try again later.</div>
+                `;
+                hideLoading();
+            }
+        }
+        
+        // Get search suggestions
+        async function getSearchSuggestions(query) {
+            if (query.length < 3) return;
+            
+            const url = `${API_BASE_URL}/api/v2/hianime/search/suggestion?q=${encodeURIComponent(query)}`;
+            const data = await fetchData(url);
+            
+            if (data.success) {
+                // Implement search suggestions dropdown if needed
+                console.log('Suggestions:', data.data.suggestions);
+            }
+        }
+        
+        // Go back to previous page
+        function goBack() {
+            if (currentCategory) {
+                showCategoryPage(currentCategory, currentPage);
+            } else if (currentSortOption) {
+                showAZListPage(currentSortOption, currentPage);
+            } else {
+                showHomePage();
+            }
+        }
+        
+        // Listen for input on search field
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            getSearchSuggestions(e.target.value);
+        });
+    </script>
+</body>
+</html>
