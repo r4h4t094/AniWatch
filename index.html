@@ -1233,20 +1233,6 @@
             border-radius: 5px;
         }
 
-        /* Error Message */
-        .error-message {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #dc3545;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            z-index: 9999;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: opacity 0.5s;
-        }
-
         /* Responsive */
         @media (max-width: 1024px) {
             .anime-grid {
@@ -1929,9 +1915,8 @@
     </div>
     
     <script>
-        // API Configuration with built-in proxy
+        // API Configuration
         const API_BASE_URL = 'https://aniwatch-api-net.vercel.app/api/v2/hianime';
-        const PROXY_URL = '/api/proxy?url=';
         
         // State Management
         let state = {
@@ -2092,7 +2077,6 @@
                     showAnimeDetails(state.currentAnime.id);
                 }
             });
-            elements.playerWatchBtn.addEventListener('click', playFromServer);
             
             // Anime details controls
             elements.animeDetailsClose.addEventListener('click', closeAnimeDetails);
@@ -2167,40 +2151,33 @@
             }, 5000);
         }
         
-        // API Functions with proxy
-        async function fetchWithProxy(url) {
+        // API Functions with built-in CORS bypass
+        async function fetchWithCorsBypass(url) {
             try {
-                const encodedUrl = encodeURIComponent(url);
-                const response = await fetch(`${PROXY_URL}${encodedUrl}`);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
+                // Using a proxy server built into the frontend
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+                const response = await fetch(proxyUrl);
                 const data = await response.json();
                 
-                if (data.error) {
-                    throw new Error(data.error);
+                if (data.contents) {
+                    return JSON.parse(data.contents);
                 }
-                
-                return data;
+                return null;
             } catch (error) {
-                console.error('API Error:', error);
-                showError('Failed to fetch data. Please try again.');
-                throw error;
+                console.error('Error fetching with CORS bypass:', error);
+                return null;
             }
         }
-
+        
         async function fetchHomeData() {
             try {
-                const data = await fetchWithProxy(`${API_BASE_URL}/home`);
+                const data = await fetchWithCorsBypass(`${API_BASE_URL}/home`);
                 
-                if (data.success) {
+                if (data && data.success) {
                     state.homeData = data.data;
                     renderHomeData();
                 } else {
                     console.error('Failed to fetch home data');
-                    showError('Failed to load home data.');
                 }
             } catch (error) {
                 console.error('Error fetching home data:', error);
@@ -2209,13 +2186,12 @@
         
         async function fetchAnimeDetails(animeId) {
             try {
-                const data = await fetchWithProxy(`${API_BASE_URL}/anime/${animeId}`);
+                const data = await fetchWithCorsBypass(`${API_BASE_URL}/anime/${animeId}`);
                 
-                if (data.success) {
+                if (data && data.success) {
                     return data.data;
                 } else {
                     console.error('Failed to fetch anime details');
-                    showError('Failed to load anime details.');
                     return null;
                 }
             } catch (error) {
@@ -2226,13 +2202,12 @@
         
         async function fetchAnimeEpisodes(animeId) {
             try {
-                const data = await fetchWithProxy(`${API_BASE_URL}/anime/${animeId}/episodes`);
+                const data = await fetchWithCorsBypass(`${API_BASE_URL}/anime/${animeId}/episodes`);
                 
-                if (data.success) {
+                if (data && data.success) {
                     return data.data;
                 } else {
                     console.error('Failed to fetch anime episodes');
-                    showError('Failed to load episodes.');
                     return null;
                 }
             } catch (error) {
@@ -2243,13 +2218,12 @@
         
         async function fetchEpisodeServers(episodeId) {
             try {
-                const data = await fetchWithProxy(`${API_BASE_URL}/episode/servers?animeEpisodeId=${episodeId}`);
+                const data = await fetchWithCorsBypass(`${API_BASE_URL}/episode/servers?animeEpisodeId=${episodeId}`);
                 
-                if (data.success) {
+                if (data && data.success) {
                     return data.data;
                 } else {
                     console.error('Failed to fetch episode servers');
-                    showError('Failed to load servers.');
                     return null;
                 }
             } catch (error) {
@@ -2260,13 +2234,12 @@
         
         async function fetchStreamingLinks(episodeId, server, category = 'sub') {
             try {
-                const data = await fetchWithProxy(`${API_BASE_URL}/episode/sources?animeEpisodeId=${episodeId}&server=${server}&category=${category}`);
+                const data = await fetchWithCorsBypass(`${API_BASE_URL}/episode/sources?animeEpisodeId=${episodeId}&server=${server}&category=${category}`);
                 
-                if (data.success) {
+                if (data && data.success) {
                     return data.data;
                 } else {
                     console.error('Failed to fetch streaming links');
-                    showError('Failed to load video sources.');
                     return null;
                 }
             } catch (error) {
@@ -2277,9 +2250,9 @@
         
         async function fetchSearchSuggestions(query) {
             try {
-                const data = await fetchWithProxy(`${API_BASE_URL}/search/suggestion?q=${encodeURIComponent(query)}`);
+                const data = await fetchWithCorsBypass(`${API_BASE_URL}/search/suggestion?q=${encodeURIComponent(query)}`);
                 
-                if (data.success) {
+                if (data && data.success) {
                     renderSearchSuggestions(data.data.suggestions);
                 } else {
                     console.error('Failed to fetch search suggestions');
@@ -2371,7 +2344,7 @@
                 top10Item.innerHTML = `
                     <div class="top10-rank">${index + 1}</div>
                     <div class="top10-img">
-                        <img src="${anime.poster}" alt="${anime.name}" loading="lazy">
+                        <img src="${anime.poster}" alt="${anime.name}">
                     </div>
                     <div class="top10-info">
                         <h4 class="top10-title">${anime.name}</h4>
@@ -2461,7 +2434,7 @@
                 });
                 
                 suggestionItem.innerHTML = `
-                    <img src="${suggestion.poster}" alt="${suggestion.name}" loading="lazy">
+                    <img src="${suggestion.poster}" alt="${suggestion.name}">
                     <div class="suggestion-info">
                         <h4>${suggestion.name}</h4>
                         <p>${suggestion.moreInfo.join(' • ')}</p>
@@ -2483,7 +2456,6 @@
             // Set background and poster
             elements.animeDetailsBg.style.backgroundImage = `url(${info.poster})`;
             elements.animeDetailsPoster.src = info.poster;
-            elements.animeDetailsPoster.alt = info.name;
             
             // Set titles
             elements.animeDetailsTitle.textContent = info.name;
@@ -2559,7 +2531,7 @@
                     
                     characterCard.innerHTML = `
                         <div class="character-image">
-                            <img src="${character.character.poster}" alt="${character.character.name}" loading="lazy">
+                            <img src="${character.character.poster}" alt="${character.character.name}">
                         </div>
                         <div class="character-info">
                             <h4 class="character-name">${character.character.name}</h4>
@@ -2728,7 +2700,7 @@
             
             animeCard.innerHTML = `
                 <div class="anime-card-img">
-                    <img src="${anime.poster}" alt="${anime.name}" loading="lazy">
+                    <img src="${anime.poster}" alt="${anime.name}">
                     ${anime.rank ? `<div class="anime-card-badge">Top ${anime.rank}</div>` : ''}
                 </div>
                 <div class="anime-card-info">
@@ -2797,7 +2769,7 @@
             // Fetch episodes
             const episodesData = await fetchAnimeEpisodes(animeId);
             if (!episodesData || !episodesData.episodes || episodesData.episodes.length === 0) {
-                showError('No episodes found for this anime');
+                alert('No episodes found for this anime');
                 return;
             }
             
@@ -2810,14 +2782,13 @@
             // Fetch servers for this episode
             const servers = await fetchEpisodeServers(episodeId);
             if (!servers) {
-                showError('No servers found for this episode');
+                alert('No servers found for this episode');
                 return;
             }
             
             // Update player UI
             elements.playerTitle.textContent = state.currentAnime.name;
             elements.playerEpisode.textContent = `Episode ${episodeId.split('=')[1] || '1'}`;
-            elements.playerType.textContent = state.currentServer?.category === 'dub' ? 'Dub' : 'Sub';
             
             // Render server list
             renderServerList(servers);
@@ -2837,7 +2808,7 @@
             );
             
             if (!streamingLinks || !streamingLinks.sources || streamingLinks.sources.length === 0) {
-                showError('No streaming links found for this server');
+                alert('No streaming links found for this server');
                 return;
             }
             
@@ -2893,21 +2864,8 @@
             elements.animeDetailsOverlay.classList.remove('active');
         }
         
-        // Error handling function
-        function showError(message) {
-            const errorElement = document.createElement('div');
-            errorElement.className = 'error-message';
-            errorElement.textContent = message;
-            
-            document.body.appendChild(errorElement);
-            
-            setTimeout(() => {
-                errorElement.style.opacity = '0';
-                setTimeout(() => {
-                    document.body.removeChild(errorElement);
-                }, 500);
-            }, 3000);
-        }
+        // Initialize player button
+        elements.playerWatchBtn.addEventListener('click', playFromServer);
     </script>
 </body>
 </html>
